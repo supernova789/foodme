@@ -1,16 +1,8 @@
-# Stage 0, "build-stage", based on Node.js, to build and compile the frontend
-FROM node:10.16.3 as build-stage
-WORKDIR /app
-COPY . .
-RUN npm install
-#ARG configuration=production
-#RUN npm run build -- --output-path=./dist/angular-app --configuration $configuration
-
-# Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
-FROM nginx:1.15
-FROM ubuntu:16.04
-#Copy ci-dashboard-dist
-COPY --from=build-stage /app/ /usr/share/nginx/html
-#Copy default nginx configuration
-COPY ./nginx-custom.conf /etc/nginx/conf.d/default.conf
-RUN chmod +x /usr/share/nginx/html/scripts/web-server.sh
+FROM centos
+RUN sudo yum update -y
+RUN sudo yum install git -y
+RUN sudo curl –sL https://rpm.nodesource.com/setup_10.x | sudo bash -
+RUN sudo yum install nodejs -y
+RUN sudo git clone https://github.com/supernova789/foodme.git
+RUN sudo chmod +x /home/centos/foodme/scripts/web-server.sh
+CMD ["sh","-c","cd /home/centos/foodme/ && npm install && cd /home/centos/foodme/scripts && web-server.sh"]
